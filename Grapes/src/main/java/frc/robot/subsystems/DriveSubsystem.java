@@ -18,17 +18,17 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class DriveSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
-  private DoubleSupplier forward, turn;
+  private DoubleSupplier forwardPower, turnPower;
   private DifferentialDrive drive;
 
-  public DriveSubsystem(DoubleSupplier forward, DoubleSupplier turn, DifferentialDrive drive) {
-    this.forward = forward;
-    this.turn = turn;
+  public DriveSubsystem(DoubleSupplier forwardPower, DoubleSupplier turnPower, DifferentialDrive drive) {
+    this.forwardPower = forwardPower;
+    this.turnPower = turnPower;
     this.drive = drive;
   }
 
   public void drive() {
-    drive.arcadeDrive(forward.getAsDouble(), turn.getAsDouble(), true);
+    drive.arcadeDrive(forwardPower.getAsDouble(), turnPower.getAsDouble(), true);
   }
 
   @Override

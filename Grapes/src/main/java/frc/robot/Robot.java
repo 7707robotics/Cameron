@@ -7,9 +7,18 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.DriveSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,6 +33,14 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  private Joystick driverInput;
+  private SpeedController frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+  private SpeedControllerGroup leftMotors, rightMotors;
+  private DifferentialDrive drive;
+  private DoubleSupplier forwardPower, turnPower;
+  
+  private DriveSubsystem driveSubsystem;
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -33,6 +50,24 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    driverInput = new Joystick(RobotMap.driverGamePad);
+
+    frontLeftMotor = new WPI_VictorSPX(RobotMap.frontLeftMotor);
+    frontRightMotor = new WPI_VictorSPX(RobotMap.frontRightMotor);
+    backLeftMotor = new WPI_VictorSPX(RobotMap.backLeftMotor);
+    backRightMotor = new WPI_VictorSPX(RobotMap.backRightMotor);
+    
+    leftMotors = new SpeedControllerGroup(frontLeftMotor, backLeftMotor);
+    rightMotors = new SpeedControllerGroup(frontRightMotor, backRightMotor);
+
+    drive = new DifferentialDrive(leftMotors, rightMotors);
+
+    forwardPower = () -> driverInput.getRawAxis(RobotMap.leftAxisY);
+    turnPower = () -> driverInput.getRawAxis(RobotMap.leftAxisX);
+
+    driveSubsystem = new DriveSubsystem(forwardPower, turnPower, drive);
+
   }
 
   /**
